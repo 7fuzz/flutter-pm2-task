@@ -5,9 +5,9 @@ import 'user.dart';
 import 'login.dart';
 
 class SettingPage extends StatefulWidget {
-  final String username;
+  final User user;
 
-  const SettingPage({super.key, required this.username});
+  const SettingPage({super.key, required this.user});
 
   @override
   _SettingPageState createState() => _SettingPageState();
@@ -18,15 +18,13 @@ class _SettingPageState extends State<SettingPage> {
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
 
-  void _changePassword() {
+  void _changePassword(User user) {
     if (!_formKey.currentState!.validate()) return;
     
     var bytes = utf8.encode(_oldPasswordController.text);
     var hashedOldPassword = sha256.convert(bytes).toString();
 
-    User user = users.firstWhere((u) => u.username == widget.username);
-
-    if (user.password != hashedOldPassword) {
+    if (widget.user.password != hashedOldPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password lama tidak sesuai')),
       );
@@ -37,7 +35,7 @@ class _SettingPageState extends State<SettingPage> {
     var hashedNewPassword = sha256.convert(bytesNew).toString();
 
     user.password = hashedNewPassword;
-    users.removeWhere((u) => u.username == widget.username);
+    users.removeWhere((u) => u.username == user.username);
     users.add(user);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -57,7 +55,7 @@ class _SettingPageState extends State<SettingPage> {
           actions: [
             TextButton(
               onPressed: () {
-                users.removeWhere((u) => u.username == widget.username);
+                users.removeWhere((u) => u.username == widget.user.username);
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => const LoginPage()),
                   (Route<dynamic> route) => false,
@@ -83,6 +81,7 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
+    User user = widget.user;
     return Scaffold(
       appBar: AppBar(title: const Text('Setting')),
       body: Padding(
@@ -106,7 +105,9 @@ class _SettingPageState extends State<SettingPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _changePassword,
+                onPressed: () {
+                  _changePassword(user);
+                },
                 child: const Text('Ganti Password'),
               ),
               const SizedBox(height: 20),

@@ -3,47 +3,41 @@ import 'package:login/dashboard.dart';
 import 'user.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String username;
+  final User user;
 
-  const ProfilePage({super.key, required this.username});
+  const ProfilePage({super.key, required this.user});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late String _name;
-  late String _address;
-
-  @override
-  void initState() {
-    super.initState();
-    User user = users.firstWhere((u) => u.username == widget.username);
-    _name = user.nama;
-    _address = user.alamat;
-  }
-
-  void _updateProfile() {
-    User user = users.firstWhere((u) => u.username == widget.username);
-    user.nama = _name;
-    user.alamat = _address;
-    users.removeWhere((u) => u.username == widget.username);
+  void updateProfile(user) {
+    user = widget.user;
+    users.removeWhere((u) => u.username == user.username);
     users.add(user);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated successfully')),
-    );
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => Dashboard(username: user.username)),
+      const SnackBar(content: Text('Profile berhasil diubah')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    User user = widget.user;
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Dashboard(user: user)),
+            );
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -51,25 +45,27 @@ class _ProfilePageState extends State<ProfilePage> {
             TextField(
               decoration: const InputDecoration(labelText: 'Username'),
               readOnly: true,
-              controller: TextEditingController(text: widget.username),
+              controller: TextEditingController(text: user.username),
             ),
             TextField(
               decoration: const InputDecoration(labelText: 'Name'),
               onChanged: (value) {
-                _name = value;
+                user.nama = value;
               },
-              controller: TextEditingController(text: _name),
+              controller: TextEditingController(text: user.nama),
             ),
             TextField(
               decoration: const InputDecoration(labelText: 'Address'),
               onChanged: (value) {
-                _address = value;
+                user.alamat = value;
               },
-              controller: TextEditingController(text: _address),
+              controller: TextEditingController(text: user.alamat),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _updateProfile,
+              onPressed: () {
+                updateProfile(user);
+              },
               child: const Text('Update Profile'),
             ),
           ],

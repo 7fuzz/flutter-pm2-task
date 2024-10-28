@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:login/dana.dart';
 import 'package:login/setting.dart';
 import 'login.dart';
 import 'profile.dart';
 import 'user.dart';
+import 'package:intl/intl.dart';
 
 class Dashboard extends StatelessWidget {
-  final String username;
-  const Dashboard({super.key, required this.username});
+  final User user;
+  const Dashboard({super.key, required this.user});
   
   @override
   Widget build(BuildContext context) {
-    User user = users.firstWhere((u) => u.username == username);
-    var nama = user.nama;
+    String nama = user.nama;
+    String dana = NumberFormat('#,##0', 'id_ID').format(user.dana);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
@@ -25,7 +27,7 @@ class Dashboard extends StatelessWidget {
                 color: Colors.blue,
               ),
               child: Text(
-                'Welcome, $username',
+                'Selamat datang, $nama',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -39,7 +41,7 @@ class Dashboard extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfilePage(username: username,)),
+                  MaterialPageRoute(builder: (context) => ProfilePage(user: user)),
                 );
               },
             ),
@@ -50,15 +52,19 @@ class Dashboard extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingPage(username: username,)),
+                  MaterialPageRoute(builder: (context) => SettingPage(user: user)),
                 );
               },
             ),
             ListTile(
-              leading: const Icon(Icons.square_rounded),
-              title: const Text('Placeholder'),
+              leading: const Icon(Icons.attach_money),
+              title: const Text('Dana'),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DanaPage(user: user)),
+                );
               },
             ),
             ListTile(
@@ -87,8 +93,16 @@ class Dashboard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Welcome, $nama!',
+              'Selamat datang, $nama!',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft, // Align to the left
+              child: Text(
+                'Dana: Rp. $dana',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -101,7 +115,7 @@ class Dashboard extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ProfilePage(username: username,)),
+                        MaterialPageRoute(builder: (context) => ProfilePage(user: user,)),
                       );
                     },),
                   DashboardCard(
@@ -110,16 +124,16 @@ class Dashboard extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SettingPage(username: username)),
+                        MaterialPageRoute(builder: (context) => SettingPage(user: user,)),
                       );
                     },),
                   DashboardCard(
-                    title: 'Placeholder',
-                    icon: Icons.square_rounded,
+                    title: 'Dana',
+                    icon: Icons.attach_money,
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const KosongPage()),
+                        MaterialPageRoute(builder: (context) => DanaPage(user: user)),
                       );
                     },),
                   DashboardCard(

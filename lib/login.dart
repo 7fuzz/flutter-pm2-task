@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Dashboard(username: user.username)),
+        MaterialPageRoute(builder: (context) => Dashboard(user: user,)),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
